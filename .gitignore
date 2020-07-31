@@ -1,1 +1,4 @@
 .idea/vsc.xml
+auth-course.iml
+.idea/libraries/Maven__junit_junit_4_13.xml
+target/*
