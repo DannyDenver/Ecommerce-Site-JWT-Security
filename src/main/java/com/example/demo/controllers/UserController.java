@@ -54,46 +54,14 @@ public class UserController {
 		cartRepository.save(cart);
 		user.setCart(cart);
 
-		if(createUserRequest.getPassword().length() > 7 ||
+		if(createUserRequest.getPassword().length() < 7 ||
 			!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
 			return ResponseEntity.badRequest().build();
 		}
 
-		byte[] salt = createSalt();
-
-		user.setPassword(get_SecurePassword(createUserRequest.getPassword(), salt));
-		user.setSalt(salt);
+		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 
 		userRepository.save(user);
 		return ResponseEntity.ok(user);
 	}
-
-	private static String get_SecurePassword(String passwordToHash, byte[] salt){
-		String generatedPassword = null;
-		try {
-			MessageDigest md = MessageDigest.getInstance("SHA-256");
-			md.update(salt);
-			byte[] bytes = md.digest(passwordToHash.getBytes());
-			StringBuilder sb = new StringBuilder();
-			for(int i=0; i< bytes.length ;i++)
-			{
-				sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
-			}
-			generatedPassword = sb.toString();
-		}
-		catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return generatedPassword;
-	}
-
-	// Method to generate a Salt
-	private static byte[] createSalt() {
-		SecureRandom random = new SecureRandom();
-		byte[] salt = new byte[16];
-		random.nextBytes(salt);
-		return salt;
-	}
-
-	
 }

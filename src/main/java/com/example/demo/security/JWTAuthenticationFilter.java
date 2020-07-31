@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
 import static com.example.demo.security.SecurityConstants.*;
 
@@ -32,8 +31,8 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
         try {
-            User credentials = new ObjectMapper()
-                    .readValue(req.getInputStream(), User.class);
+            com.example.demo.model.persistence.User credentials = new ObjectMapper()
+                    .readValue(req.getInputStream(), com.example.demo.model.persistence.User.class);
 
             return authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
