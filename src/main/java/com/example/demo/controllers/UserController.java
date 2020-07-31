@@ -1,12 +1,7 @@
 package com.example.demo.controllers;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Optional;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.sun.org.slf4j.internal.Logger;
+import com.sun.org.slf4j.internal.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,7 +42,7 @@ public class UserController {
 	@GetMapping("/{username}")
 	public ResponseEntity<User> findByUserName(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
-		log.info("Found user by username: ", user);
+		log.debug("Found user by username: ", user);
 
 
 		return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
@@ -57,10 +52,9 @@ public class UserController {
 	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
 		User user = new User();
 		user.setUsername(createUserRequest.getUsername());
-		log.info("User name set with " +  createUserRequest.getUsername());
+		log.debug("User name set with " +  createUserRequest.getUsername());
 
 		Cart cart = new Cart();
-
 
 		cartRepository.save(cart);
 		user.setCart(cart);
@@ -72,8 +66,13 @@ public class UserController {
 
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 
-		userRepository.save(user);
-		log.info("Saved new user ", user);
+		try {
+			userRepository.save(user);
+			log.debug("Saved new user ", user);
+		}catch (Error e) {
+			log.error("Failed to create user", user);
+		}
+
 
 		return ResponseEntity.ok(user);
 	}
