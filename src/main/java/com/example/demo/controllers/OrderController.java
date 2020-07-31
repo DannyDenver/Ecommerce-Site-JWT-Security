@@ -2,6 +2,8 @@ package com.example.demo.controllers;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +22,9 @@ import com.example.demo.model.persistence.repositories.UserRepository;
 @RestController
 @RequestMapping("/api/order")
 public class OrderController {
-	
-	
+
+	public static final Logger log = LoggerFactory.getLogger(OrderController.class);
+
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -32,11 +35,20 @@ public class OrderController {
 	@PostMapping("/submit/{username}")
 	public ResponseEntity<UserOrder> submit(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
+
 		if(user == null) {
+			log.error("Could not submit order for user with username " + username);
+
 			return ResponseEntity.notFound().build();
 		}
+
+		log.info("Submitting order by user " + username);
+
 		UserOrder order = UserOrder.createFromCart(user.getCart());
 		orderRepository.save(order);
+
+		log.info("Submitted order by user " + username, order);
+
 		return ResponseEntity.ok(order);
 	}
 	
@@ -46,6 +58,11 @@ public class OrderController {
 		if(user == null) {
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(orderRepository.findByUser(user));
+
+		List<UserOrder> userOrders = orderRepository.findByUser(user);
+
+		log.info("Getting order history for user " + username, userOrders);
+
+		return ResponseEntity.ok(userOrders);
 	}
 }
