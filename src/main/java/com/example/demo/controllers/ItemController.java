@@ -33,7 +33,7 @@ public class ItemController {
 	public ResponseEntity<Item> getItemById(@PathVariable Long id) {
 		Optional<Item> item = itemRepository.findById(id);
 
-		log.info("Getting item with id " + id, item);
+		log.debug("Getting item with id " + id, item);
 
 		return ResponseEntity.of(item);
 	}
@@ -42,7 +42,7 @@ public class ItemController {
 	public ResponseEntity<List<Item>> getItemsByName(@PathVariable String name) {
 		List<Item> items = itemRepository.findByName(name);
 
-		log.info("Getting items with name " + name, items);
+		log.debug("Getting items with name " + name, items);
 
 		return items == null || items.isEmpty() ? ResponseEntity.notFound().build()
 				: ResponseEntity.ok(items);
