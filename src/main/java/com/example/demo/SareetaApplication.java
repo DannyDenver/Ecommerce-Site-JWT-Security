@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.example.demo.logging.CsvLogger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -20,6 +21,11 @@ public class SareetaApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SareetaApplication.class, args);
+	}
+
+	@Bean
+	public CsvLogger getLogger() {
+		return new CsvLogger();
 	}
 
 }

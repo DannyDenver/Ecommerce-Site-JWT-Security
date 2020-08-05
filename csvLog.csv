@@ -1,0 +1,10 @@
+datetime, userId, action, item, itemid, message, status
+2020-08-05T02:55:03.554981Z,1,createNewUserwithCart,cart,1,Successfully created user with username yo,Success
+2020-08-05T02:55:09.171974Z,3,createNewUserwithCart,cart,3,Successfully created user with username dan,Success
+2020-08-05T02:55:11.535964Z,4,createNewUserwithCart,cart,4,Successfully created user with username man,Success
+2020-08-05T04:18:57.554343Z,1,createNewUserwithCart,cart,1,Successfully created user with username sara,Success
+2020-08-05T04:19:02.733347Z,2,createNewUserwithCart,cart,2,Successfully created user with username mike,Success
+2020-08-05T04:19:05.695155Z,3,createNewUserwithCart,cart,3,Successfully created user with username bill,Success
+2020-08-05T04:19:08.670221Z,4,createNewUserwithCart,cart,4,Successfully created user with username bob,Success
+2020-08-05T04:19:30.129218Z,,getItemById,Item,2,Get item by id,Success
+2020-08-05T04:19:33.108015Z,,getItemById,Item,1,Get item by id,Success

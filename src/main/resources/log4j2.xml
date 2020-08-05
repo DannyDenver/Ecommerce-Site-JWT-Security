@@ -1,51 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="csvLog.fileName">csvLog</Property>
+        <Property name="file-header">datetime, userId, action, item, itemid, message, status</Property>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %p %m%n</Property>
+    </Properties>
 
-<Configuration status="DEBUG">
+    <Filters>
+        <MarkerFilter marker="CSV" onMatch="ACCEPT" onMismatch="DENY"/>
+    </Filters>
 
     <Appenders>
-
-        <Console name="LogToConsole" target="SYSTEM_OUT">
-
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
 
-        <File name="LogToFile" fileName="logs/app.log">
-
-            <PatternLayout>
-
-                <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
-
-            </PatternLayout>
-
-        </File>
-
+        <RollingFile name="csvFile"
+                     fileName="${csvLog.fileName}.csv"
+                     filePattern="${csvLog.filename}-%d{MM-dd-yyyy}-%i.csv" >
+            <CsvParameterLayout delimiter="," header="${file-header}\n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true" />
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>
     </Appenders>
-
     <Loggers>
-
-        <Logger name="com.example.demo" level="debug" additivity="false">
-
-            <AppenderRef ref="LogToFile"/>
-
-            <AppenderRef ref="LogToConsole"/>
-
+        <Logger name="com.example.demo" additive="false" level="debug" >
+            <AppenderRef ref="csvFile"/>
         </Logger>
 
-        <Logger name="org.springframework.boot" level="error" additivity="false">
-
-            <AppenderRef ref="LogToConsole"/>
-
-        </Logger>
-
-        <Root level="error">
-
-            <AppenderRef ref="LogToFile"/>
-
-            <AppenderRef ref="LogToConsole"/>
-
+        <Root level="error" additivity="false">
+            <AppenderRef ref="console"/>
         </Root>
-
     </Loggers>
-
 </Configuration>

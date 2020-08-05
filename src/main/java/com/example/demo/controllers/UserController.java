@@ -1,8 +1,9 @@
 package com.example.demo.controllers;
-
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.example.demo.logging.CsvLogger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,8 +24,9 @@ import com.example.demo.model.requests.CreateUserRequest;
 @RequestMapping("/api/user")
 public class UserController {
 
-	public static final Logger log = LoggerFactory.getLogger(UserController.class);
-	
+	@Autowired
+	private CsvLogger csvLogger;
+
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -42,17 +44,21 @@ public class UserController {
 	@GetMapping("/{username}")
 	public ResponseEntity<User> findByUserName(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
-		log.debug("Found user by username: ", user);
 
+		 if(user == null){
+			 csvLogger.logToCsv(null,"findByUserName", null, null, "Not found user with name  " + user.getUsername() , "NotFound");
+			 return	ResponseEntity.notFound().build();
+		} else {
+			 csvLogger.logToCsv(user.getId(),"findByUserName", null, null, "Getting user with name  " + user.getUsername() , "Success");
+			 return  ResponseEntity.ok(user);
 
-		return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
+		 }
 	}
 	
 	@PostMapping("/create")
 	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
 		User user = new User();
 		user.setUsername(createUserRequest.getUsername());
-		log.debug("User name set with " +  createUserRequest.getUsername());
 
 		Cart cart = new Cart();
 
@@ -67,12 +73,12 @@ public class UserController {
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
 
 		try {
-			userRepository.save(user);
-			log.debug("Saved new user ", user);
-		}catch (Error e) {
-			log.error("Failed to create user", user);
+			User newUser = userRepository.save(user);
+			csvLogger.logToCsv(newUser.getId(),"createNewUserwithCart", "cart", newUser.getCart().getId(), "Successfully created user with username " + newUser.getUsername() , "Success");
+			// tcpInput.submit("INFO: New user create request received");
+		}catch (Error e) {  // | IOException e
+			csvLogger.logToCsv(null,"createNewUserwithCart", "cart", null, "Failed creating user with username " + user.getUsername() , "Error");
 		}
-
 
 		return ResponseEntity.ok(user);
 	}
